@@ -1,10 +1,12 @@
 #ifndef KX022_H
 #define KX022_H
 #define SlaveAddress    0x1e
+#define KX022_DATA_reg  0x3f
 #define Boundrate       100000
 // This register is used to verify circuit functionality. It always is 0x55h while OK
 #define COTR_reg        0x0C
 #define txbuf_len       10
+#define buf_len         255
 
 struct WriteReg1{
     unsigned char reg_addr;
@@ -18,6 +20,8 @@ extern unsigned char kx022_read_regs(unsigned char register_address, unsigned ch
                                 unsigned char number_of_bytes);
 extern unsigned char kx022_write_regs(const unsigned char *register_address, const unsigned char *value, \
                                 unsigned char number_of_bytes);
+extern unsigned char db2axis(unsigned char *buffer, unsigned char length);
+
 
 #endif
 

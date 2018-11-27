@@ -37,9 +37,9 @@ unsigned char kx022_read_regs(unsigned char register_address, unsigned char * de
     bcm2835_i2c_begin();
     bcm2835_i2c_setSlaveAddress(SlaveAddress);
     bcm2835_i2c_set_baudrate(Boundrate);
-    printf("I2C Initializing done.\n");
+    //printf("I2C Initializing done.\n");
     rc = bcm2835_i2c_read_register_rs(&register_address, destination, number_of_bytes);
-    if(!rc){
+    if( rc != BCM2835_I2C_REASON_OK){
         printf("Read failed.(%d)\n", rc);
     }
     bcm2835_i2c_end();
@@ -56,14 +56,14 @@ unsigned char kx022_write_regs(const unsigned char *register_address, const unsi
     bcm2835_i2c_begin();
     bcm2835_i2c_setSlaveAddress(SlaveAddress);
     bcm2835_i2c_set_baudrate(Boundrate);
-    printf("I2C Initializing done.\n");
+    //printf("I2C Initializing done.\n");
 
     memset(txbuf, 0, sizeof(txbuf));
     memcpy(txbuf, register_address, 1);
     memcpy(txbuf + 1, value, number_of_bytes);
 
     rc = bcm2835_i2c_write(txbuf, number_of_bytes + 1);
-    if(!rc){
+    if(rc != BCM2835_I2C_REASON_OK ){
         printf("Write failed.(%d)\n", rc);
     }
 
@@ -91,19 +91,24 @@ void Init_KX022(void)
     
     return;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+char axis[3][90];
+unsigned char db2axis(unsigned char *buffer, unsigned char length)
+{
+    unsigned char i;
+    enum{x,y,z};
+    
+    for(i=0; i<length; i++){
+        if(i%3 == x){
+            axis[x][i/3] = (char)buffer[i];
+            printf("%d;",axis[x][i/3]);
+        }else if(i%3 == y){
+            axis[y][i/3] = (char)buffer[i];
+            printf("%d;",axis[y][i/3]);
+        }else if(i%3 == z){
+            axis[z][i/3] = (char)buffer[i];
+            printf("%d\n",axis[z][i/3]);
+        }
+    }
+    return  (i/3);
+}
 

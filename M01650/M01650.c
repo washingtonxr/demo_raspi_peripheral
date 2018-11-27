@@ -5,6 +5,20 @@
 #include <unistd.h>
 #include "M01650.h"
 
+static void Reset_bcm(void)
+{
+    /* Set as Ouput */
+    bcm2835_gpio_fsel(RESET_PIN, BCM2835_GPIO_FSEL_OUTP);
+    
+    bcm2835_gpio_write(RESET_PIN, LOW);
+    bcm2835_delay(1);     /* delay for ms. */
+    
+    bcm2835_gpio_write(RESET_PIN, HIGH);
+    bcm2835_delay(1);
+    
+    return;
+}
+
 void Start_bcm2835(void)
 {
     bcm2835_init();
@@ -74,8 +88,8 @@ int Write_Sceen(unsigned char *data)
 
 void Init_M01650(void)
 {
+    Reset_bcm();
     printf("Starting Initializing M01650.\n");
-  
     Single_Write(Config_Addr, 0xae); // Display OFF
     Single_Write(Config_Addr, 0xa8); // Set Multiplex Ration
     Single_Write(Config_Addr, 0x3f);

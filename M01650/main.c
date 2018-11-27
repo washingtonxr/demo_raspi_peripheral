@@ -96,7 +96,9 @@ int main(int argc, char **argv)
         printf("Parse Args Error.\n");
         return 0;
     }
+    
     Start_bcm2835();
+
     Init_M01650();
 
     printf("The end Init_M01650.\n");
