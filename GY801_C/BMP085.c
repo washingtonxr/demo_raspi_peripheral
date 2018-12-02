@@ -194,7 +194,7 @@ static short Multiple_read(unsigned char ST_Address)
     WriteBuf[0] = ST_Address;
     bcm2835_i2c_write(WriteBuf, 1);
     rc = bcm2835_i2c_read(ReadBuf, 2);
-    if(!rc){
+    if(rc != BCM2835_I2C_REASON_OK ){
         printf("Read failed.(%d)\n",rc);
     }
 #else
@@ -204,7 +204,7 @@ static short Multiple_read(unsigned char ST_Address)
     bcm2835_i2c_set_baudrate(BMP085_Boundrate);
     
     rc = bcm2835_i2c_read_register_rs(RegAddr, ReadBuf, 2);
-    if(!rc){
+    if(rc != BCM2835_I2C_REASON_OK ){
         printf("Read failed.(%d)\n",rc);
     }
 #endif
