@@ -148,7 +148,7 @@ void Read_ADXL345_FIFO(void)
     unsigned char d_depth;
     int rc;
     unsigned char i, j, k = 0;
-#if 0
+#if 1
     unsigned char *ReadBuf;
     short int *raw_data;
     float *single_dir;
@@ -163,21 +163,21 @@ void Read_ADXL345_FIFO(void)
     printf("Get data:");
     d_depth = Single_Read_ADXL345(0x39);                            // Get FIFO status.
     printf("FIFO STATUS = 0x%02X\n",d_depth);
-#if 0
-    ReadBuf = (unsigned char *)malloc(d_depth*fifo_width);
+#if 1
+    ReadBuf = (unsigned char *)malloc(sizeof(unsigned char)*d_depth*fifo_width);
     if(ReadBuf == NULL){
         printf("malloc error.\n");
     }
-    raw_data = (short int *)malloc(d_depth*3);
+    raw_data = (short int *)malloc(sizeof(short int)*d_depth*3);
     if(raw_data == NULL){
         printf("malloc error.\n");
     }
-    single_dir = (float *)malloc(d_depth*3);
+    single_dir = (float *)malloc(sizeof(float)*d_depth*3);
     if(single_dir == NULL){
         printf("malloc error.\n");
     }
     printf("result addr = 0x%08x\n",result);
-    result = (float *)malloc(d_depth);
+    result = (float *)malloc(sizeof(float)*d_depth);
     if(result == NULL){
         printf("malloc error.\n");
     }
@@ -214,7 +214,7 @@ void Read_ADXL345_FIFO(void)
         printf("===> %02d: %f\n", i, result[i]);
     }
     printf("result addr = 0x%08x\n",result);
-#if 0
+#if 1
     free(result);
     free(single_dir);
     free(raw_data);
