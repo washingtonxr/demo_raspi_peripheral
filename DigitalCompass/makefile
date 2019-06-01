@@ -1,9 +1,9 @@
 m       = compass
 output  = eCompass
-objects = $(output).o adxl345.o hmc5883l.o
+objects = $(output).o adxl345.o hmc5883l.o common.o
 
 cc      = gcc
-ld      = -lbcm2835 -lm
+ld      = -lbcm2835 -lm -g
 
 build:$(output)
 
@@ -18,6 +18,9 @@ adxl345.o:
 
 hmc5883l.o:
 	$(cc) -c hmc5883l.c hmc5883l.h
+
+common.o:
+	$(cc) -c common.c common.h
 
 .PHONY:clean
 clean:
