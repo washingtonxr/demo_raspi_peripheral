@@ -1,9 +1,27 @@
 #include "hmc5883l.h"
-#include "common.h"
 
 void Init_HMC5883(void)
 {
     I2C_Single_Write(HMC5883L_Addr, 0x02, 0x00);
+}
+
+unsigned char Read_HMC5883L_OneData(sensor_data_t *SDB)
+{
+    unsigned char ReadBuf[fifo_width];
+    unsigned char i;
+    //double angle[3];
+
+    I2C_Multipul_Read(HMC5883L_Addr, 0x03, ReadBuf, fifo_width);
+
+    SDB->mag_data.x = (ReadBuf[0]<<8) + ReadBuf[1];
+    SDB->mag_data.z = (ReadBuf[2]<<8) + ReadBuf[3];
+    SDB->mag_data.y = (ReadBuf[4]<<8) + ReadBuf[5];
+#if 0
+    angle[0] = atan2((double)y,(double)x) * (180 / 3.14159265) + 180; 
+    angle[1] = atan2((double)z,(double)y) * (180 / 3.14159265) + 180; 
+    angle[2] = atan2((double)x,(double)z) * (180 / 3.14159265) + 180; 
+#endif
+    return RUN_OK;
 }
 
 void Read_HMC5883_FIFO(void)
