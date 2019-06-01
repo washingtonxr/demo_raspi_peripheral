@@ -1,5 +1,5 @@
 **Notices:**This is a demostration drivers for Raspi3 B.
-
+Create a project named  electronic compass.
 **Author:**Washington Ruan
 
 **E-mail:**washingtonxr@gmail.com
