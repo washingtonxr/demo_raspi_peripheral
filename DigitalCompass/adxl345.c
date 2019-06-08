@@ -27,11 +27,13 @@ unsigned char Read_ADXL345_OneData(sensor_data_t *SDB)
     short int *raw_data;
     float *single_dir;
     float *result;
-
-    printf("Infor: Get acceleratometer datalength: ");
+#if 0
+    printf("Info: Get acceleratometer datalength: ");
     d_depth = I2C_Single_Read(ADXL345_Addr, 0x39);                            // Get FIFO status.
     printf("FIFO STATUS = 0x%02X\n",d_depth);
-
+#else
+    d_depth = I2C_Single_Read(ADXL345_Addr, 0x39);                            // Get FIFO status.
+#endif
     /* Temporary memory allocate. */
     ReadBuf = (unsigned char *)malloc(sizeof(unsigned char)*d_depth*fifo_width);
     if(ReadBuf == NULL){

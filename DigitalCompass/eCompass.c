@@ -7,6 +7,8 @@ unsigned int sys_cnt;
 int main(unsigned char argc, unsigned char **argv)
 {
 	sensor_data_t *SensorData;
+    time_t now;
+    struct tm *timenow;
 
     /* Initialize bcm2835. */
     if(Start_bcm2835() != RUN_OK){
@@ -34,10 +36,14 @@ int main(unsigned char argc, unsigned char **argv)
     sleep(1);
     
     while(1){
-        printf("Info: %d\n", sys_cnt++);
+        
+        time(&now);
+        timenow = localtime(&now);
+
+        printf("Info: %d - %s", sys_cnt++, asctime(timenow));
 
         Read_ADXL345_OneData(SensorData);
-        printf("Infor: ACC: %f\t%f\t%f\n", SensorData->acc_data.x, SensorData->acc_data.y, SensorData->acc_data.z);
+        printf("Info: ACC: %f\t%f\t%f\n", SensorData->acc_data.x, SensorData->acc_data.y, SensorData->acc_data.z);
  
         Read_HMC5883L_OneData(SensorData);
 
@@ -46,7 +52,7 @@ int main(unsigned char argc, unsigned char **argv)
                                                                             + pow((long)SensorData->acc_data.y, 2)));
 		SensorData->mag_data.roll = atan2((double)SensorData->acc_data.y, sqrt(pow((long)SensorData->acc_data.z, 2) \
                                                                             + pow((long)SensorData->acc_data.x, 2)));
-        printf("Infor: pitch:%f, roll:%f\n", SensorData->mag_data.pitch, SensorData->mag_data.roll);
+        printf("Info: pitch:%f, roll:%f\n", SensorData->mag_data.pitch, SensorData->mag_data.roll);
 
 		/* Calculate Azimuth:
 		 * Magnetic horizontal components, after compensating for Roll(r) and Pitch(p) are:
@@ -60,14 +66,14 @@ int main(unsigned char argc, unsigned char **argv)
         
 		SensorData->mag_data.Y_h = (double)SensorData->mag_data.y*cos(SensorData->mag_data.roll) \
                         - (double)SensorData->mag_data.z*sin(SensorData->mag_data.roll);
-        printf("Infor: X_h:%f\tX_h:%f\n", SensorData->mag_data.X_h, SensorData->mag_data.Y_h);
+        printf("Info: X_h:%f\tX_h:%f\n", SensorData->mag_data.X_h, SensorData->mag_data.Y_h);
 
 		SensorData->mag_data.azimuth = atan2(SensorData->mag_data.Y_h, SensorData->mag_data.X_h);
 		if(SensorData->mag_data.azimuth < 0) {	/* Convert Azimuth in the range (0, 2pi) */
 			SensorData->mag_data.azimuth = 2*PI + SensorData->mag_data.azimuth;
 		}
 
-        printf("Infor: azimuth(w):%f -> %f\n", SensorData->mag_data.azimuth, (SensorData->mag_data.azimuth*180)/PI);
+        printf("Info: azimuth(w):%f -> %f\n", SensorData->mag_data.azimuth, (SensorData->mag_data.azimuth*180)/PI);
         sleep(1);
     }
 
