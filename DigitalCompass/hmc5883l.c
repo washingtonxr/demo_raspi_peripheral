@@ -1,8 +1,57 @@
 #include "hmc5883l.h"
 
+static uint8_t HMC5883Lmode;
+/** Set magnetic field gain value.
+ * @param gain New magnetic field gain value
+ * @see HMC5883L_GetGain()
+ * @see HMC5883L_RA_CONFIG_B
+ * @see HMC5883L_CRB_GAIN_BIT
+ * @see HMC5883L_CRB_GAIN_LENGTH
+ */
+void HMC5883L_SetGain(uint8_t gain)
+{
+    // use this method to guarantee that bits 4-0 are set to zero, which is a
+    // requirement specified in the datasheet; 
+    uint8_t tmp = gain << (HMC5883L_CRB_GAIN_BIT - HMC5883L_CRB_GAIN_LENGTH + 1);
+    I2C_Single_Write(HMC5883L_DEFAULT_ADDRESS, tmp, HMC5883L_RA_CONFIG_B);
+}
+
+/** Set measurement mode.
+ * @param newMode New measurement mode
+ * @see HMC5883L_GetMode()
+ * @see HMC5883L_MODE_CONTINUOUS
+ * @see HMC5883L_MODE_SINGLE
+ * @see HMC5883L_MODE_IDLE
+ * @see HMC5883L_RA_MODE
+ * @see HMC5883L_MODEREG_BIT
+ * @see HMC5883L_MODEREG_LENGTH
+ */
+void HMC5883L_SetMode(uint8_t newMode)
+{
+    // use this method to guarantee that bits 7-2 are set to zero, which is a
+    // requirement specified in the datasheet; 
+    uint8_t tmp = HMC5883Lmode << (HMC5883L_MODEREG_BIT - HMC5883L_MODEREG_LENGTH + 1);
+    I2C_Single_Write(HMC5883L_DEFAULT_ADDRESS, tmp, HMC5883L_RA_MODE);
+    HMC5883Lmode = newMode; // track to tell if we have to clear bit 7 after a read
+}
+
 void Init_HMC5883(void)
 {
+#if 0
     I2C_Single_Write(HMC5883L_Addr, 0x02, 0x00);
+#else
+    /* write CONFIG_A register. */
+    uint8_t tmp = (HMC5883L_AVERAGING_8 << (HMC5883L_CRA_AVERAGE_BIT - HMC5883L_CRA_AVERAGE_LENGTH + 1))
+            | (HMC5883L_RATE_15 << (HMC5883L_CRA_RATE_BIT - HMC5883L_CRA_RATE_LENGTH + 1))
+            | (HMC5883L_BIAS_NORMAL << (HMC5883L_CRA_BIAS_BIT - HMC5883L_CRA_BIAS_LENGTH + 1));
+    I2C_Single_Write(HMC5883L_DEFAULT_ADDRESS, tmp, HMC5883L_RA_CONFIG_A);
+
+    /* write CONFIG_B register. */
+    HMC5883L_SetGain(HMC5883L_GAIN_1090);
+
+    /* write MODE register. */
+    HMC5883L_SetMode(HMC5883L_MODE_SINGLE);
+#endif
 }
 
 unsigned char Read_HMC5883L_OneData(sensor_data_t *SDB)

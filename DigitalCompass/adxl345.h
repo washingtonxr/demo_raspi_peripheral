@@ -3,7 +3,7 @@
 #include "common.h"
 
 #define ADXL345_Addr    0x53
-#define ADXL345_DNUM    3
+#define ADXL345_DNUM    1
 
 void Init_ADXL345();
 void Read_ADXL345_FIFO();
