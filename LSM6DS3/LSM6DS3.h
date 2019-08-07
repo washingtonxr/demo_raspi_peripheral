@@ -139,8 +139,10 @@
 #define LSM6DS3_ACC_GYRO_MAG_OFFZ_H                   0x32
 
 
-void Lsm6d3s_Init(void);
-void Lsm6d3s_GetSingleRawData(void);
+void Lsm6ds3_Init(void);
+void Lsm6ds3_GetSingleRawData(void);
+void Lsm6ds3_GetRawDataFromFIFO(void);
+
 
 #endif
 /* End of this file. */

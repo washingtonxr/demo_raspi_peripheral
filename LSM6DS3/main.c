@@ -12,23 +12,27 @@ void sigalrm_fun(int sig)
 {
 	alarm(1);
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-	printf("System time stamp: %d.%d\n", ts.tv_sec, ts.tv_nsec);
-	Lsm6d3s_GetSingleRawData();
+	printf("Info:STS: %d.%d\n", ts.tv_sec, ts.tv_nsec);
+#if 0
+	Lsm6ds3_GetSingleRawData();
+#else
+	Lsm6ds3_GetRawDataFromFIFO();
+#endif
 	return;
 }
 
 int main(int argc, unsigned char **argv)
 {
-	printf("Info: Demostration for LSM6DS3TR-C DS.\n");
+	printf("Info: This is a demostration for LSM6DS3TR-C DS.\n");
 	
-	Lsm6d3s_Init();
+	Lsm6ds3_Init();
 	
 	signal(SIGALRM, sigalrm_fun);
 	alarm(1);
 
 	while(1){
 #if 0
-		Lsm6d3s_GetSingleRawData();
+		Lsm6ds3_GetSingleRawData();
 		usleep(10000);
 #endif
 		sleep(1);
