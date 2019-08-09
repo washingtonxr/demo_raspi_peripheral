@@ -34,7 +34,8 @@ struct WriteRegister SensorInit[] = {
     {LSM6DS3_ACC_GYRO_INT2_CTRL,    0x10},      /* INT2_FIFO_OVR. */
 #if 1
     {LSM6DS3_ACC_GYRO_FIFO_CTRL3,   0x09},      /* Gyro & Acc with no decimation. */
-    {LSM6DS3_ACC_GYRO_FIFO_CTRL5,   0x21},      /* FIFO's ODR = 104Hz in FIFO mode stop collecting data when it's full. */
+    {LSM6DS3_ACC_GYRO_FIFO_CTRL5,   0x26},      /* FIFO's ODR = 104Hz in FIFO continuous mode. */
+    //{LSM6DS3_ACC_GYRO_FIFO_CTRL5,   0x21},      /* FIFO's ODR = 104Hz in FIFO mode stop collecting data when it's full. */
 #endif
 
 //		加速度计52HZ（倾斜角检测功能工作在26HZ，因此加速度计ODR必须设置为>=26hz）,2g量程。
@@ -121,12 +122,13 @@ void Lsm6ds3_Init(void)
 
 static void Lsm6ds3_GetFIFOStatus(void)
 {
-    unsigned char i, j;
+    unsigned short i;
+    unsigned char j;
     unsigned char ret;
     unsigned char fifo_data[4];
     unsigned char tmp_data[2];
-    unsigned char data_depth;
-    unsigned short raw_data[256];
+    unsigned short data_depth;
+    unsigned short raw_data[2048];
 
     ret = Lsm6ds3_ReadBytes(LSM6DS3_ACC_GYRO_FIFO_STATUS1, fifo_data, 4);
     if(ret != 0){
@@ -136,8 +138,11 @@ static void Lsm6ds3_GetFIFOStatus(void)
 #if 1
     printf("Info: FIFO_STATUS: 0x%02X\t0x%02X\t0x%02X\t0x%02X\n", fifo_data[0], fifo_data[1], fifo_data[2], fifo_data[3]);
 #endif
-
-    data_depth = fifo_data[0];
+    data_depth = fifo_data[1];
+    data_depth = data_depth&0x07;
+    data_depth <<= 8;
+    data_depth += fifo_data[0];
+    printf("Info: FIFO depth = 0x%04x\n", data_depth);
     if(data_depth > 0){
         
         memset(raw_data, 0, sizeof(raw_data));
@@ -148,9 +153,14 @@ static void Lsm6ds3_GetFIFOStatus(void)
             if(ret != 0){
                 printf("Error: Lsm6d3s_ReadBytes failed.(%02x)\n", ret);
             }
+            //printf("0x%02x 0x%02x ", tmp_data[0], tmp_data[1]);
+#if 0
             raw_data[i] = tmp_data[1]<<8 | tmp_data[0];
+            printf("0x%04x ", raw_data[i]);
+#endif
         }
-
+        printf("\n");
+#if 0
         printf("Info: Data from FIFO:\n");
         for(i = 0; i < data_depth/6; i++){
             printf("Info:ACC: ");
@@ -167,8 +177,8 @@ static void Lsm6ds3_GetFIFOStatus(void)
             }
             printf("\n");
         }
+#endif
     }
-
 }
 
 void Lsm6ds3_GetRawDataFromFIFO(void)

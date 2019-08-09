@@ -18,7 +18,6 @@ unsigned char I2C_1_ReadBytes(unsigned char dev_addr, unsigned char reg_addr, \
     bcm2835_i2c_setSlaveAddress(dev_addr);
     bcm2835_i2c_set_baudrate(baudrate);
     bcm2835_i2c_write(WriteBuf, 1);
-    
     rc = bcm2835_i2c_read(buf, len);
     if(rc != BCM2835_I2C_REASON_OK ){
         printf("Error: Read failed.(%d)\n",rc);
